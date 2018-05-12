@@ -1,0 +1,13 @@
+upstream myapp1 {
+    server ${IP_1}:${PORT_1};
+    server ${IP_2}:${PORT_2};
+    #server srv3.example.com;
+}
+
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://myapp1;
+    }
+}
