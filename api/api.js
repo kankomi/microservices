@@ -32,7 +32,8 @@ module.exports = function api(options) {
             usermsg.password = msg.args.query.password || null
             usermsg.cmd = 'login'
         }
-
+        
+        console.log("this is version 7")
         this.act(usermsg, respond)
 
     });

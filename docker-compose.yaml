@@ -1,26 +1,17 @@
 version: '2.3'
 
 services:
-  user-service_1:
+  user-service:
     build:
       context: ./user-service
       dockerfile: dockerfile
     environment: 
       - STATS_HOST=172.17.0.1
       - STATS_PORT=7000
+    scale: 2
     ports:
-      - "9010:9000"
+      - "9010-9011:9000"
 
-  user-service_2:
-    build:
-      context: ./user-service
-      dockerfile: dockerfile
-    environment: 
-      - STATS_HOST=172.17.0.1
-      - STATS_PORT=7000
-    ports:
-      - "9020:9000"
-      
   user-proxy:
     # build:
     #   context: ./loadbalancer
@@ -31,15 +22,12 @@ services:
     volumes:
       - ./user_proxy.nginx.log:/var/log/nginx
     links:
-      - user-service_1
-      - user-service_2
+      - user-service
     environment: 
-      #- IP_1=172.17.0.1
       - IP_1=172.17.0.1
       - PORT_1=9010
       - IP_2=172.17.0.1
-      - PORT_2=9020
-    #command: /bin/bash -c "envsubst < /etc/nginx/conf.d/nginx.conf.template > /etc/nginx/conf.d/loadbalance.conf && nginx -g 'daemon off;'"
+      - PORT_2=9011
 
   stats-service:
     build:
@@ -57,5 +45,21 @@ services:
       - USERS_PORT=9500
       - STATS_HOST=172.17.0.1
       - STATS_PORT=7000
+    scale: 2
+    restart: always
+    ports:
+      - "10000-10001:80"
+
+  api-proxy:
+    image: nginx-loadbalancer
     ports:
       - "3000:80"
+    volumes:
+      - ./api-proxy-logs:/var/log/nginx
+    links:
+      - api-service
+    environment: 
+      - IP_1=172.17.0.1
+      - PORT_1=10000
+      - IP_2=172.17.0.1
+      - PORT_2=10001
