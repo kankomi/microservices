@@ -1,14 +1,36 @@
 let seneca = require('seneca')();
-
-const STATS_PORT=process.env.STATS_PORT || "localhost"
-const STATS_HOST=process.env.STATS_HOST || 9006
+const config = require('./config')
 
 seneca.use('users')
       .client({
-            host: STATS_HOST,
-            port: STATS_PORT,
+            host: config.statsHost,
+            port: config.statsPort,
             pin: 'role:stats'
       })
       .listen({
             port: 9000
       })
+
+seneca.act('role:users,cmd:login,username:admin,password:passss', function (res, err) {
+      if (err) {
+            console.error(err)
+      } else {
+            console.log("login successfull")
+      }
+})
+
+seneca.act('role:users,cmd:add,username:user,password:passss,email:user@example.com', function (res, err) {
+      if (err) {
+            console.error(err)
+      } else {
+            console.log("user created")
+      }
+})
+
+seneca.act('role:users,cmd:list', function (res, err) {
+      if (err) {
+            console.error(err)
+      } else {
+            console.log(res)
+      }
+})
