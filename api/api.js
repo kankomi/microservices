@@ -32,8 +32,14 @@ module.exports = function api(options) {
             usermsg.password = msg.args.query.password || null
             usermsg.cmd = 'login'
         }
-        
-        console.log("this is version 7")
+
+        if (operation == 'add') {
+            usermsg.username = msg.args.query.username || null
+            usermsg.password = msg.args.query.password || null
+            usermsg.email = msg.args.query.email || null
+            usermsg.cmd = 'add'
+        }
+
         this.act(usermsg, respond)
 
     });
